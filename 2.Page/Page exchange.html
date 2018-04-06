@@ -57,8 +57,6 @@
             this.phyAdress = phyAdress;                 //物理地址
         }
 
-        // var obj = new pagetable(logicPage,page[num++],0,phA);
-
         function initial(){                             //初始化位示图
             var strs = '';
             var row = 8;
@@ -131,7 +129,7 @@
 
 
         function LRU(){
-            if(test.indexOf(logicPage) == -1){
+            if(test.indexOf(logicPage) == -1){//如果队列中没有该页，并且内存块未满，直接插入
                 if(logicPage > page.length-1){
                     alert("地址越界");
                 }
@@ -139,24 +137,24 @@
                     test.push(logicPage);
                     counts++;
                 }
-                if(test.length>internalB){
+                if(test.length>internalB){//如果内存块已满，则移除最久不用的第一个块
                     test.shift();
                 }
                 console.log(test);
             }
-            if(test.indexOf(logicPage)!=-1){
+            if(test.indexOf(logicPage)!=-1){//如果队列中已有页，删除队列中该页，再将他插入队尾
                 var a = test.indexOf(logicPage);
                 test.splice(a,1);
                 test.push(logicPage);
                 console.log(test);
             }
-            count++;                                       
+            count++;
             var missingPage = counts/count;
             document.getElementById("shows").innerHTML = test + "<br>" + "缺页率为：" + missingPage;
         }   
 
         function FIFO(){     
-            if(test.indexOf(logicPage) == -1){
+            if(test.indexOf(logicPage) == -1){//没有调用过并且内存未满，同上
                 test.push(logicPage);
                 counts++;
                 if(test.length>internalB){
@@ -164,10 +162,10 @@
                 }
                 console.log(test);
             }
-            if(test.indexOf(logicPage)!=-1){
+            if(test.indexOf(logicPage)!=-1){//调用过
                 console.log(test);
             }
-            count++;  
+            count++;
             var missingPage = counts/count;
             document.getElementById("shows").innerHTML = test + "<br>" + "缺页率为：" + missingPage;
         }
