@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title></title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="css/style.css" rel="stylesheet">
+    </head>
+    <body>
+        请输入进程名：<br/>
+        <input id="in" type="text"><br/>
+        <button id="creat" onclick="document.getElementByTag('in').text=' '" >创建</button>
+        <button id="run">运行</button>
+        <button id="stop">阻塞</button>
+        <button id="awake">唤醒</button>
+        <button id="end">结束</button><br/><br/>
+    </body>
+
+    <script>
+
+        var count = 0;
+        var n;
+        var Ready = [];
+        var Running = [];
+        var Block = [];
+
+
+        var PCB = function PCB(node,size){
+            this.node = node;
+            this.size = size;
+        }
+        
+
+        /*页面显示*/
+        
+
+        document.getElementById("creat").onclick = function(){
+            display();
+        }
+
+        document.getElementById("run").onclick = function(){
+                Operation();
+        }
+
+        document.getElementById("stop").onclick = function(){
+            Clog();
+        }
+        
+        document.getElementById("awake").onclick = function(){
+            Awake();
+        }
+
+        document.getElementById("end").onclick = function(){
+            end();
+        }
+
+        function display(){                       //创建
+            n = document.getElementById("in").value;
+            Pop();
+            console.log(Ready);
+            document.getElementById("in").value = "";
+        }
+
+        function Pop(){                             
+            var value = document.getElementById("in").value;
+            value = value.replace(/\s/,"");
+            //var 
+            if(value != ""){          
+                Ready.push(n);
+            }
+            else{
+                alert("请输入进程名");
+            }
+            // count++;                            //计数
+            // return count;
+        }
+        
+        function Operation(){                      //运行
+            var m = Ready[0];
+            if(Ready[0] == undefined){
+                alert("没有就绪进程，无法运行");
+            }
+            else{
+            Ready.shift(m);
+            Running.push(m);
+            if(Running.length > 1){
+                Ready.push(Running[0]);
+                Running.shift(Running[0]);
+            }
+            }
+            console.log("------------------------------------------");
+            console.log("就绪队列：" + Ready);
+            console.log("当前进程：" + Running);
+            console.log("阻塞队列：" + Block);
+            console.log("------------------------------------------");
+        }
+
+        function Clog(){                            //阻塞
+            var u = Running[0];
+            if(Running.length>0){
+                Block.push(u);
+                Running.shift(u)
+            }
+            else{
+                alert("没有正在运行中的进程");
+            }
+            console.log("------------------------------------------");
+            console.log("就绪队列：" + Ready);
+            console.log("当前进程：" + Running);
+            console.log("阻塞队列：" + Block);
+            console.log("------------------------------------------");
+        }
+                 
+        function Awake(){                           //唤醒
+             if(Block.length != 0){
+                        Ready.push(Block[0]);
+                        Block.shift(Block[0]);}
+            else{
+                alert("当前没有进程阻塞！");
+            }
+            console.log("------------------------------------------");
+            console.log("就绪队列：" + Ready);
+            console.log("当前进程：" + Running);
+            console.log("阻塞队列：" + Block);
+            console.log("------------------------------------------");
+        }
+                
+        function end(){
+            if(Running.length != 0){
+                Running.shift(Running[0]);}
+            else{
+                alert("当前没有正在运行的进程")
+            }
+            console.log("------------------------------------------");
+            console.log("就绪队列：" + Ready);
+            console.log("当前进程：" + Running);
+            console.log("阻塞队列：" + Block);
+            console.log("------------------------------------------");
+        }
+                     
+                    
+                
+            
+        
+        
+
+    </script>
+</html>

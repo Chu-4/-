@@ -1,0 +1,56 @@
+body{
+    margin: 0 auto;
+    text-align: center;
+    margin-top: 10%;
+}
+
+#in{
+    height: 30px;
+    width: 260px;
+    margin-bottom: 10px;
+}
+
+#run{
+    background-color: skyblue;
+    height: 30px;
+    width: 50px;
+    border: 1px;
+    font-family: 等线;
+    font-size: 13px;
+}
+
+#creat{
+    background-color: skyblue;
+    height: 30px;
+    width: 50px;
+    border: 1px;
+    font-family: 等线;
+    font-size: 13px;
+}
+
+#stop{
+    background-color: skyblue;
+    height: 30px;
+    width: 50px;
+    border: 1px;
+    font-family: 等线;
+    font-size: 13px;
+}
+
+#awake{
+    background-color: skyblue;
+    height: 30px;
+    width: 50px;
+    border: 1px;
+    font-family: 等线;
+    font-size: 13px;
+}
+
+#end{
+    background-color: skyblue;
+    height: 30px;
+    width: 50px;
+    border: 1px;
+    font-family: 等线;
+    font-size: 13px;
+}

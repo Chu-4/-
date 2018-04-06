@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title></title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="css/style.css" rel="stylesheet">
+    </head>
+    <body>
+        <!-- <input type="text" id="parent"> -->
+        <button id="process">进程申请</button>
+        <button id="equipment">创建设备</button>
+        <button id="control">创建控制器</button>
+        <button id="gallery">创建通道</button>
+        <button id="deletes">进程释放</button>
+
+        <div id="CH"></div>
+        <div id="CO"></div>
+        <div id="D"></div>
+    </body>
+    <script>
+         var parents;
+         var D1;            //初始化
+         var D2;
+         var D3;
+         var D4;
+         var D5;
+         var CO1;
+         var CO2;
+         var CO3;
+         var CH1;
+         var CH2;
+         var SDT = [];      //所有设备
+         var COCT = [];     //所有控制器
+         var CHCT = [];     //所有通道
+         var newD;          //新建设备
+         var newCO;         //新建控制器
+         var newCH;         //新建通道
+         var arrays = [];
+         var name;          //赋值
+         var parents;
+
+         //可能还需要三个新建的等待队列数组
+        
+        function D(name,parent){
+            this.name = name;
+            this.type = "DCT";
+            this.parent = parent;
+            this.status = -1;
+            this.NowProcess = "";
+            this.arrays = [];  //设备等待队列
+            this.waitingLine = DwaitingLine;
+        }
+        function DwaitingLine(process){     
+            this.arrays.push(process);
+        }
+
+        function CO(name,parent){
+            this.name = name;
+            this.type = "COCT";
+            this.parent = parent;
+            this.status = -1;
+            this.NowProcess = "";
+            this.arrays = [];
+            this.waitingLine = COwaitingLine;
+        }
+        function COwaitingLine(process){     
+            this.arrays.push(process);
+        }
+
+        function CH(name){
+            this.name = name;
+            this.type = "CHCT";
+            this.status = -1;
+            this.NowProcess = "";
+            this.arrays = [];
+            this.waitingLine = CHwaitingLine;
+        }
+        function CHwaitingLine(process){     
+            this.arrays.push(process);
+        }
+
+        document.getElementById("process").onclick = function (){
+            var process = prompt("请输入进程名","");
+            var putProcess = prompt("请输入申请的设备名","");
+            setProcess(process,putProcess);
+        }
+        
+        document.getElementById("equipment").onclick = function (){
+            name = prompt("请输入设备名称","");
+            parents = prompt("请输入连接控制器名称","");
+            addD(name,parents);
+        }
+
+        document.getElementById("control").onclick = function (){
+            name = prompt("请输入控制器名称","");
+            parents = prompt("请输入连接通道名称","");
+            addCO(name,parents);
+        }
+
+        document.getElementById("gallery").onclick = function (){
+            name = prompt("请输入通道名称","");
+            addCH(name);
+        }
+
+        document.getElementById("deletes").onclick = function (){
+            name = prompt("请输入删除设备","");
+            deletes(name);
+        }
+
+        function initial(){                 //初始化
+            CH1 = new CH("CH1");
+            CH2 = new CH("CH2");
+            CHCT = [CH1,CH2];
+            CO1 = new CO("CO1",CHCT[0].name);
+            CO2 = new CO("CO2",CHCT[0].name);
+            CO3 = new CO("CO3",CHCT[1].name);
+            COCT = [CO1,CO2,CO3];
+            D1 = new D("D1",COCT[0].name);
+            D2 = new D("D2",COCT[0].name);
+            D3 = new D("D3",COCT[1].name);
+            D4 = new D("D4",COCT[1].name);
+            D5 = new D("D5",COCT[2].name);
+            SDT = [D1,D2,D3,D4,D5];
+        }
+        
+
+        function setProcess(process,putProcess){            //申请设备
+            for(i=0;i<SDT.length;i++){
+                if(putProcess == SDT[i].name){
+                    if(SDT[i].status == -1){
+                        SDT[i].NowProcess = process;      //当前占用进程
+                        SDT[i].status = 0;
+                        for(j=0;j<COCT.length;j++){
+                            if(SDT[i].parent == COCT[j].name){
+                                if(COCT[j].status == -1){
+                                    COCT[j].NowProcess = process;
+                                    COCT[j].status = 0;
+                                    for(k=0;k<CHCT.length;k++){
+                                        if(COCT[j].parent == CHCT[k].name){
+                                            if(CHCT[k].status == -1){
+                                                CHCT[k].NowProcess = process;
+                                                CHCT[k].status = 0;
+                                            }
+                                            else{
+                                                CHCT[k].waitingLine(process);
+                                            }
+                                        }
+                                    }
+                                }
+                                else{
+                                    COCT[j].waitingLine(process);
+                                    for(k=0;k<CHCT.length;k++){
+                                        if(COCT[j].parent == CHCT[k].name){
+                                            CHCT[k].waitingLine(process);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else{
+                        SDT[i].waitingLine(process);     
+                        for(j=0;j<COCT.length;j++){
+                            if(SDT[i].parent == COCT[j].name){
+                                COCT[j].waitingLine(process);
+                            
+                                for(k=0;k<CHCT.length;k++){
+                                if(COCT[j].parent == CHCT[k].name){
+                                    CHCT[k].waitingLine(process);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            }
+            console.log("==================================================================");
+            console.log(SDT);
+            console.log(COCT);
+            console.log(CHCT);
+            console.log("==================================================================");
+            console.log("\n");
+        }
+
+
+        function deletes(name){                                                     //释放
+            for(i=0;i<SDT.length;i++){
+                if(name == SDT[i].NowProcess){
+                    SDT[i].NowProcess = SDT[i].arrays.shift();
+                    for(j=0;j<COCT.length;j++){
+                        if(SDT[i].parent == COCT[j].name){
+                            COCT[j].NowProcess = COCT[j].arrays.shift();
+                            for(k=0;k<CHCT.length;k++){
+                                if(COCT[j].parent == CHCT[k].name){
+                                    CHCT[k].NowProcess = CHCT[k].arrays.shift();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            console.log("==================================================================");
+            console.log(SDT);
+            console.log(COCT);
+            console.log(CHCT);
+            console.log("==================================================================");
+            console.log("\n");
+        }
+        
+        function addD(name,parents){  //添加设备
+            newD = new D(name,"DCT");
+            for(i=0;i<COCT.length;i++){
+                if(parents == COCT[i].name){
+                    newD.parent = parents;
+                    console.log(newD);
+                }
+            }
+            SDT.push(newD);         
+            console.log(SDT);
+        }
+        
+        function addCO(name,parents){  //添加控制器
+            newCO = new CO(name,"COCT");
+            for(i=0;i<CHCT.length;i++){
+                if(parents == CHCT[i].name){
+                    newCO.parent = parents;
+                    console.log(newCO);
+                }
+            }
+            COCT.push(newCO);         
+            console.log(COCT);
+        }
+
+        function addCH(name){  //添加设备
+            newCH = new CH(name,"CHCT");
+            CHCT.push(newCH);         
+            console.log(CHCT);
+        }
+
+        initial();
+        
+
+        
+
+    </script>
+</html>

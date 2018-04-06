@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title></title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="css/style.css" rel="stylesheet">
+    </head>
+    <body>
+    
+    </body>
+    <script>
+        var tree = new BST();
+        var element = tree.root;
+        var filesize;
+
+        function Node(data,left,right,parent){
+            this.data = data;
+            this.left = left;
+            this.right = right;
+            this.parent = parent;
+            this.array = [];
+        }
+
+        function file(data,size,parent){
+            this.data = data;
+            this.size = size;
+            this.parent = parent;
+        }
+
+        function BST(){
+            this.root = new Node("C",null,null,null);
+            this.md = md;
+            this.mk = mk;
+        }
+
+        function cd(data){          //进入子目录,改变element，element为根节点
+            if(data == " "){
+                element = element.parent;
+            }
+            else{
+                if(element.left.data == data){
+                    element = element.left;
+                }
+                else{
+                    var newe = element.left;
+                    while(newe.right.data != data){
+                        newe = newe.right;
+                    }
+                    element = newe.right;
+                }
+            }
+        }
+
+        function  md(data){
+            var node = new Node(data,null,null,null);
+            var current = element;
+            if(current.left === null){
+                current.left = node;
+                node.parent = element;
+            }
+            else{
+                w = current.left;
+                while(w.right !== null){
+                    w = w.right;
+                }
+                w.right = node;
+                node.parent = element;
+            }
+        }
+
+        function rd(data){
+            if(element.left.data == data){
+                element.left = element.left.right;
+            }
+            else{
+                var currents = element.left;
+                while(currents.right.data != data){
+                    currents = currents.right;
+                }
+                currents.right = currents.right.right;
+            }
+        }
+
+        function mk(data,size){
+            var nfile = new file(data,size,element);
+            element.array.push(nfile);
+            filesize = size;
+        }
+
+        function del(data){
+            for(var i=0;i<element.array.length;i++){
+                if(element.array[i].data == data){
+                    element.array.splice(i,1);
+                }
+                else{
+                    alert("不存在");
+                }
+            }
+        }
+
+        function dir(node){
+            var arr = [];
+            if(node === null){return};
+            console.log(node.data);
+            for(var i=0;i<node.array.length;i++){
+                 arr.push(node.array[i].data);
+                }
+            if(arr.length != 0){
+                console.log(arr);
+                }
+            dir(node.left);
+            dir(node.right);
+
+        }
+
+    </script>
+</html>
+
+<!-- md(1);md(2);md(3);md(4);md(5);md(6);
+cd(2);
+mk("f",2533);
+md("p");
+mk("d",533); -->

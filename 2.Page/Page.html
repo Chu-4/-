@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title></title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="css/style.css" rel="stylesheet">
+    </head>
+    <body>
+        <button id="initial"> 初始化 </button><br>
+        ID:<input id="id" type="text">
+        进程大小:<input id="size" type="text">
+        <button id="create"> 创建 </button>
+        <button id="search"> 地址转换 </button>
+        <button id="free"> 释放 </button>
+        <br>
+        <br>
+        <div id="show"></div>
+        <br>
+        <div id="ww"></div>
+    </body>
+
+    <script>
+
+        var arr = new Array(8);
+        var ID;
+        var te;
+        var size;
+        var insite;
+        var page;
+        var allpage;
+        var pagelength;
+        var newLogic;
+        var test = [];
+        var strss = "";
+        var logicPage;
+
+
+        function PCB(){
+            this.ID = ID;
+            this.size = size;
+            this.te = te;
+
+            this.show = function(){
+                return PCB.length;
+                console.log(ID);
+            }
+
+        }
+
+
+        document.getElementById("initial").onclick = function(){
+            initial();
+        }
+
+
+        document.getElementById("free").onclick = function(){
+            free();
+            page = [];
+            document.getElementById("ww").innerHTML = "";
+            test.pop();
+            console.log(test);
+        }
+
+
+        document.getElementById("create").onclick = function(){         //创建PBC块,包括ID和进程大小
+            get();
+            test.push(new PCB(ID,size));
+            memoryBlock();
+            console.log(test);                                      
+            throughArr(arr);
+        }
+
+        function logicToPhysics(insite,page){                       //逻辑地址转物理地址
+            var ins = parseInt(insite,16);                          //16进制转换为10进制 
+            console.log(ins);
+            logicPage = Math.floor(ins/1024);                    //逻辑页
+            var offset = ins%1024;                                   //偏移量
+            var physicsPage = page[logicPage];                       //物理页
+            var physicsAdress = physicsPage * 1024 + offset;         //物理地址
+            console.log(physicsAdress);
+            document.getElementById("ww").innerHTML = "物理地址为：" + (physicsAdress).toString(16);//10进制转16进制
+        }
+
+        function throughArr(arr){                             
+            for(i=0;i<arr.length;i++){                              //遍历数组
+                for(j=0;j<arr[i].length;j++){
+                    if(arr[i][j] == '0'){                           //找到所有为0的位置
+                        // console.log(8*i+j);                           
+                        allpage.push(8*i+j);            
+                    }
+                }
+            }   
+            page = allpage.slice(0,pagelength);
+            change(page,arr);                                      //当前进程占用的页    
+        }
+
+        document.getElementById("search").onclick = function(){
+            var insite = prompt("请输入要查找的逻辑地址：","");
+            logicToPhysics(insite,page);
+            if(logicPage > page.length-1){
+                alert("地址越界");
+            }
+        }
+
+
+        function get(){
+            ID = document.getElementById("id").value;
+            size = document.getElementById("size").value;
+        }
+
+
+        function initial(){                                         //初始化位示图
+            var strs = '';
+            var row = 8;
+            for(var i=0;i<row;i++){
+                arr[i] = [];
+                for(var j=0;j<row;j++){
+                    arr.j = j;
+                    arr[i][j] = Math.random()>0.5?0:1;                  
+                }
+                strs += arr[i]+"<br>";
+            }       
+            document.getElementById("show").innerHTML = strs;
+        }                   
+            
+
+        function change(page,arr){                                    //修改已分配位
+            var z;
+            var str='';
+            console.log(page);
+            for(var w=0;w<page.length;w++){                         
+                z = page[w];
+                for(var x=0;x<8;x++){
+                    for(var y=0;y<8;y++){
+                        if(arr[x][y] == 0 && 8*x+y == z){
+                            arr[x][y] = 1;
+                        }    
+                    }
+            if(w == page.length-1) str += arr[x] + "<br>";
+                }     
+               document.getElementById("show").innerHTML = str;
+            }                 
+            strss = arr;
+        }
+
+
+        function memoryBlock(){
+            pagelength = Math.ceil(size/1024);                        //设定块大小为1K，由进程大小判断该进程占用的内存快数量
+            console.log(pagelength);       
+            allpage = [];    
+            console.log(allpage);                                         //空页表    
+        }
+
+
+        
+
+
+        
+
+        function free(){                                     //释放
+            var mid = "";
+            var z;
+            for(var w=0;w<pagelength;w++){                         
+                z = page[w];
+                for(i=0;i<8;i++){
+                    for(j=0;j<8;j++){
+                        if(8*i+j == z){
+                            strss[i][j] = 0;
+                        }
+                    }
+                    if(w == pagelength-1)
+                    {mid += strss[i] + "<br>";}
+                }
+                     document.getElementById("show").innerHTML = mid;
+            } 
+            document.getElementById('id').value = " ";          //输入值重置
+            document.getElementById('size').value = " ";
+        }
+        
+
+
+
+
+
+
+        
+    </script>
+</html>

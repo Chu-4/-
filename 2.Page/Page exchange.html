@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title></title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="css/style.css" rel="stylesheet">
+    </head>
+    <body>
+            请设置内存：<input id="internal" type="text"><button id="sure"> 确定 </button>
+            进程大小:<input id="allsize" type="text">
+            <button id="changeCreate"> 创建 </button>
+            <button id="run"> LRU调用 </button>
+            <button id="runs"> FIFO调用 </button>
+            <div id="show"></div>
+            <br>
+            <div id="shows"></div>
+    </body>
+
+    <script>
+       
+        var runline = [];
+        var num = 0;
+        var internalBlock = [];             //内存空间
+        var props = [];                     //所有空间（内存+置换）
+        var arr = new Array(8);
+        var page;
+        var allpage = [];
+        var pagelength;
+        var test = [];
+        var phA;
+        var internalB;                              //内存块数
+        var logicPage;
+        var count = 0;
+        var counts =  0;
+        var physicsPage;
+        
+                           //内存中有的页号表
+
+        document.getElementById("sure").onclick = function(){                   //确定内存块数
+            internalB = parseInt(document.getElementById("internal").value);
+            console.log(internalB);
+        }
+
+
+        document.getElementById("changeCreate").onclick = function(){   
+                initial();
+                memoryBlock();                                     
+                throughArr();
+            }
+
+
+        function pagetable(pageNum,block,status,phyAdress){
+            this.pageNum = pageNum;                     //页号
+            this.block = block;                         //块号
+            this.status = status;                       //状态位
+            this.phyAdress = phyAdress;                 //物理地址
+        }
+
+        // var obj = new pagetable(logicPage,page[num++],0,phA);
+
+        function initial(){                             //初始化位示图
+            var strs = '';
+            var row = 8;
+            for(var i=0;i<row;i++){
+                arr[i] = [];
+                for(var j=0;j<row;j++){
+                    arr.j = j;
+                    arr[i][j] = Math.random()>0.5?0:1;                  
+                }
+                strs += arr[i]+"<br>";
+            }       
+            document.getElementById("show").innerHTML = strs;
+        }               
+
+
+         function memoryBlock(){
+            pagelength =  Math.ceil(document.getElementById("allsize").value / 1024);                        //设定块大小为1K，由进程大小判断该进程占用的内存快数量 
+            allpage = [];                                             //空页表    
+        }
+
+
+        function throughArr(){                             
+            for(var i=0;i<arr.length;i++){                              //遍历数组
+                for(var j=0;j<arr[i].length;j++){
+                    if(arr[i][j] == '0'){                           //找到所有为0的位置                       
+                        allpage.push(8*i+j);            
+                    }
+                }
+            }   
+            page = allpage.slice(0,pagelength);
+            console.log(allpage);                               //所有空位
+            console.log(page);                                  //进程所需空位
+        }
+
+
+        function logicToPhysics(insite,page){  
+
+            var ins = parseInt(insite,16);                  //16进制转换为10进制 
+            console.log(ins);
+            logicPage = Math.floor(ins/1024);          //逻辑页
+            var offset = ins%1024;                         //偏移量
+            physicsPage = page[logicPage];                       //物理页
+            var physicsAdress = physicsPage * 1024 + offset;         //物理地址
+            console.log(physicsAdress);
+            phA = (physicsAdress).toString(16);            //10进制转16进制
+        }
+    
+
+        document.getElementById("run").onclick = function(){
+            var insite = prompt("请输入要调用的逻辑地址：","");
+            logicToPhysics(insite,page);
+            if(logicPage > page.length-1){
+                alert("地址越界");
+            }
+            else{
+                LRU();
+            }
+        }
+
+        document.getElementById("runs").onclick = function(){
+            var insite = prompt("请输入要调用的逻辑地址：","");
+            logicToPhysics(insite,page);
+            if(logicPage > page.length-1){
+                alert("地址越界");
+            }
+            else{
+                FIFO();
+            }
+        }
+
+
+        function LRU(){
+            if(test.indexOf(logicPage) == -1){
+                if(logicPage > page.length-1){
+                    alert("地址越界");
+                }
+                else{
+                    test.push(logicPage);
+                    counts++;
+                }
+                if(test.length>internalB){
+                    test.shift();
+                }
+                console.log(test);
+            }
+            if(test.indexOf(logicPage)!=-1){
+                var a = test.indexOf(logicPage);
+                test.splice(a,1);
+                test.push(logicPage);
+                console.log(test);
+            }
+            count++;                                       
+            var missingPage = counts/count;
+            document.getElementById("shows").innerHTML = test + "<br>" + "缺页率为：" + missingPage;
+        }   
+
+        function FIFO(){     
+            if(test.indexOf(logicPage) == -1){
+                test.push(logicPage);
+                counts++;
+                if(test.length>internalB){
+                    test.shift();
+                }
+                console.log(test);
+            }
+            if(test.indexOf(logicPage)!=-1){
+                console.log(test);
+            }
+            count++;  
+            var missingPage = counts/count;
+            document.getElementById("shows").innerHTML = test + "<br>" + "缺页率为：" + missingPage;
+        }
+
+        
+    </script>
+
+</html>

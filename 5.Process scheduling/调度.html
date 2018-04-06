@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title></title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="css/style.css" rel="stylesheet">
+    </head>
+    <body>
+    </body>
+    <script>
+
+        var nowtime = 0;   //当前时刻 
+        var display = [];
+        var first;      //SJF当前执行
+        var waitingline = [];
+        var bigwait = [];
+        var second;     //RR当前执行
+        var RRend = [];
+
+        function PCB(ID,arrive,run){
+            this.ID = ID;
+            this.arrive = arrive;
+            this.run = run;
+            this.finish = 0;
+            this.turnaround = "";
+            this.Wturnaround = "";
+            this.base = base;
+        }
+
+        function base(){                        //FCFS算法
+            if(this.arrive == 0){
+                this.finish = this.arrive + this.run;
+            }
+            else{
+                this.finish = nowtime + this.run;
+            }
+            nowtime = this.finish;
+            this.turnaround = nowtime - this.arrive;
+            this.Wturnaround = this.turnaround / this.run
+            console.log(this.ID);
+            console.log("完成时间:" + nowtime);
+            console.log("周转时间：" + this.turnaround);
+            console.log("带权周转时间：" + this.Wturnaround);
+            console.log("========================================================");
+        }
+
+        function SJF(){                             //SJF算法
+            while(nowtime == 0){
+                first = display.shift();
+                first.base();
+                bigwait.push(first);
+            }            
+            for(var i = 0;i < display.length;i++){
+                if(display[i].arrive < nowtime + 1){
+                    waitingline.push(display[i]);
+                    display.splice(i,1);
+                }
+            }
+            waitingline.sort(compare('run'));
+            waitingline[0].base();
+            first = waitingline.shift();
+            bigwait.push(first);
+            bigwait.sort(compare('arrive'));
+            while(waitingline.length != 0){
+                SJF();
+            }
+            // console.log(bigwait);
+        }
+
+        function RR(timeslice){
+            var runline = [];
+            for(var j = 0;j < display.length;j++){
+                runline.push(display[j].run);
+            }
+            this.timeslice = timeslice;
+            while(display.length != 0){
+                second = display.shift();  
+                if(second.run - timeslice > 0){
+                    second.run = second.run - timeslice;
+                    nowtime = nowtime + timeslice;
+                    display.push(second);
+                }
+                else if(second.run - timeslice < 0){
+                    nowtime = nowtime + second.run;
+                    second.finish = nowtime;
+                    RRend.push(second);
+                }
+                else if(second.run - timeslice == 0){
+                    nowtime = nowtime + timeslice;
+                    second.finish = nowtime;
+                    RRend.push(second);
+                }
+            }
+            RRend.sort(compare('arrive'));
+            for(var i = 0;i < RRend.length;i++){
+                console.log(RRend[i].ID);
+                console.log("完成时间:" + RRend[i].finish);
+                RRend[i].turnaround = RRend[i].finish - RRend[i].arrive;
+                console.log("周转时间：" +  RRend[i].turnaround);
+                RRend[i].Wturnaround = RRend[i].turnaround / runline[i];
+                console.log("带权周转时间：" +  RRend[i].Wturnaround);
+                console.log("========================================================");
+            }
+        }
+
+        function wait(ID,arrive,run){       //就绪队列
+            var n = new PCB(ID,arrive,run);
+            display.push(n);
+            display.sort(compare('arrive'));
+        }
+
+        function compare(arrive){           //对比排序
+            return function(a,b){
+                var value1 = a[arrive];
+                var value2 = b[arrive];
+                return value1 - value2;
+            }
+        }
+
+        function FCFS(){                        
+            for(var i = 0;i < display.length;i++){
+                display[i].base();
+            }
+        }
+        
+    </script>
+</html>
