@@ -25,7 +25,7 @@
         var props = [];                     //所有空间（内存+置换）
         var arr = new Array(8);
         var page;
-        var allpage = [];
+        var allpages = [];
         // 斤斤计较
         var pagelength;
         var test = [];
@@ -93,6 +93,7 @@
             page = allpage.slice(0,pagelength);
             console.log(allpage);                               //所有空位
             console.log(page);                                  //进程所需空位
+            hahahhahahaahhaha
         }
 
 
@@ -113,7 +114,7 @@
             var insite = prompt("请输入要调用的逻辑地址：","");
             logicToPhysics(insite,page);
             if(logicPage > page.length-1){
-                alert("地址越界");
+                alert("地址");
             }
             else{
                 LRU();
