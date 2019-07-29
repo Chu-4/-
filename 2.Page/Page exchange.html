@@ -70,8 +70,11 @@
                 strs += arr[i]+"<br>";
             }       
             document.getElementById("show").innerHTML = strs;
-        }               
+        }
 
+        function test () {
+            console.log('????')
+        }
 
          function memoryBlock(){
             pagelength =  Math.ceil(document.getElementById("allsize").value / 1024);                        //设定块大小为1K，由进程大小判断该进程占用的内存快数量 
